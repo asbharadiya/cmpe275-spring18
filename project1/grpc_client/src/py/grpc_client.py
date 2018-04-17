@@ -17,6 +17,7 @@ CONST_MESOWEST_HEADER = 'STN YYMMDD/HHMM MNET SLAT SLON SELV TMPF SKNT DRCT GUST
 # TODO: move to elsewhere
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    print(s)
     my_ip = socket.inet_ntoa(fcntl.ioctl(
         s.fileno(),
         0x8915,  # SIOCGIFADDR
@@ -24,9 +25,16 @@ def get_ip_address(ifname):
     )[20:24])
     return my_ip
 
+def get_ip_address_mac():
+  ips = [ip for ip in socket.gethostbyname_ex(socket.gethostname()) if ip[:3] == '169']
+  print(ips)
+  return ips[0]
+
 nodes = requests.get('https://cmpe275-spring-18.mybluemix.net/get').text.split(',')
+print('getting nodes list %s' % nodes)
 try:
-  my_ip = get_ip_address('eth0')
+  my_ip = get_ip_address_mac()
+  print('my ip is %s' % my_ip)
 except:
   my_ip = 'some host'
 
@@ -98,6 +106,7 @@ class Client():
     """
     Returns: bool
     """
+    print('putting to %s...' % self.receiver)
     req_iterator = put_req_iterator(fpath, self.sender, self.receiver)
     resp = self.stub.putHandler(req_iterator)
     print(resp.msg)
@@ -144,6 +153,7 @@ def main():
   parser.add_argument('-s', '--stations', nargs='*', help='-s <station1> <station2> <...>')
   parser.add_argument('-m', '--message', type=str, default='Hello World!', help='-m "Hello World!"')
   parser.add_argument('-o', '--output', type=str, default='./result.out', help='-m "Specify the output file locaton for queries"')
+  parser.add_argument('-b', '--broadcast', action='store_true', default=False, help='-m "Put to all nodes if True, otherwise just put to the given host"')
 
   args = parser.parse_args()
   try:
@@ -160,6 +170,9 @@ def main():
       with open(args.output, 'w') as fp:
         if not client.get(fp, from_utc=from_utc, to_utc=to_utc):
           for node in nodes:
+            print('trying... %s' % node)
+            if node == host:
+              continue
             client = Client(node, port, host)
             if client.get(fp, from_utc=from_utc, to_utc=to_utc):
               print('get succeeded at one of the other nodes')
@@ -171,15 +184,23 @@ def main():
     elif args.upload:
       fp = args.file
       assert fp
-      if not client.put(fpath=fp):
+      is_local_put_failed = False
+      if not args.broadcast:
+        is_local_put_failed = client.put(fpath=fp)
+
+      if args.broadcast or is_local_put_failed:
+        print('going to broadcast...')
         for node in nodes:
-          client = Client(node, port, host)
-          if client.put(fpath=fp):
-            print('put succeeded at one of the other nodes')
-            break
-        print('put failed at all other nodes')
-      else:
-        print('put succeeded at this node')
+          if node == host:
+            continue
+          print('going to put data to node %s' % node)
+          try:
+            client = Client(node, port, host)
+            if client.put(fpath=fp):
+              print('put succeeded at %s' % node)
+          except Exception as e:
+            print(e)
+            print('put failed at node %s' % node)
 
     elif args.ping:
       client.ping(msg=args.message)

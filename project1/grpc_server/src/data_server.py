@@ -28,7 +28,7 @@ def get_write_socket():
   write_sock.bind(write_connect_string)
   # TODO: try not rebind with every grpc call, let's do a timeout of 4 hour or something
   time.sleep(1) # this is needed so that we talk after the bind is complete!
-  print('write socket connected to %s' % write_connect_string)
+  logging.warning('write socket connected to %s' % write_connect_string)
 
   return write_sock
 
@@ -39,17 +39,17 @@ def get_read_socket():
   # 10 sec read timeout
   read_client_sock.setsockopt(zmq.RCVTIMEO, 1000)
 
-  print('read socket connecting to %s' % read_connect_string)
+  logging.warning('read socket connecting to %s' % read_connect_string)
   read_client_sock.connect(read_connect_string)
   return read_client_sock
 
 def read(sock, params):
   # TODO: add more params like table name, target station
-  print('trying to send a req to read socket...')
-  print(sock)
+  logging.warning('trying to send a req to read socket...')
+  logging.warning(sock)
   sock.send_json(params)
   # wait for response
-  print('waiting for read response...')
+  logging.warning('waiting for read response...')
   resp = sock.recv_multipart()
   return resp
 
@@ -58,17 +58,17 @@ def try_read(params):
   try:
     read_client_sock = get_read_socket()
     resp = read(read_client_sock, params)
-    print(resp)
+    logging.warning(resp)
     for r in resp:
       yield r
 
   except Exception as e:
-    print(e)
+    logging.warning(e)
     return {'msg': 'something wrong with read...'}
   finally:
     # Make sure it's closed
     if read_client_sock:
-      # print('closing the read socket...')
+      # logging.warning('closing the read socket...')
       read_client_sock.disconnect(read_connect_string)
       read_client_sock.close()
 
@@ -80,12 +80,17 @@ def pre_read_check(params):
     datetime.datetime.strptime(params['from_utc'], CONST_TIMESTAMP_FMT)
     datetime.datetime.strptime(params['to_utc'], CONST_TIMESTAMP_FMT)
   except Exception as e:
-    print(e)
+    logging.warning(e)
     return False
   return True
 
 def pre_write_check():
   # TODO: if we can't handle the data, send data to other clusters
+  for resp in try_read({'pre_write_check': True}):
+    logging.warning(resp)
+    if str(resp) == 'True':
+      logging.warning('disk full!!!!')
+      return False
   return True
 
 def write(payload):
@@ -94,12 +99,12 @@ def write(payload):
     write_sock = get_write_socket()
     write_sock.send_json(payload)
   except Exception as e:
-    print('something wrong with write...')
-    print(e)
+    logging.warning('something wrong with write...')
+    logging.warning(e)
   finally:
     # Make sure it's closed
     if write_sock:
-      print('closing the write socket...')
+      logging.warning('closing the write socket...')
       write_sock.disconnect(write_connect_string)
       write_sock.close()
 
@@ -110,7 +115,7 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
   #   self.read_sock = read_sock
   #   self.write_sock = write_sock
   def putHandler(self, request_iterator, context):
-    print('this is a put request')
+    logging.warning('this is a put request')
     if pre_write_check():
       for request in request_iterator:
         assert request.putRequest.metaData.uuid is not None
@@ -119,10 +124,10 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
           'uuid': request.putRequest.metaData.uuid}
         # timestamp for mesonet only, mesowest each row has diff timestamps
         if request.putRequest.datFragment.timestamp_utc:
-          print('mesonet!')
+          logging.warning('mesonet!')
           payload['timestamp_utc'] = request.putRequest.datFragment.timestamp_utc
         else:
-          print('mesowest!')
+          logging.warning('mesowest!')
         write(payload)
       return data_pb2.Response(
         code=data_pb2.StatusCode.Value('Ok'),
@@ -138,10 +143,10 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
       'to_utc': request.getRequest.queryParams.to_utc,
       'target': 'mesowest' # default to mesowest
     }
-    print('this is a get request with params %s' % str(params))
+    logging.warning('this is a get request with params %s' % str(params))
     if pre_read_check(params):
       for datFrag in try_read(params):
-        print(datFrag)
+        logging.warning(datFrag)
         yield data_pb2.Response(
           code=data_pb2.StatusCode.Value('Ok'),
           msg="get data successfully from the grpc server!",
@@ -152,7 +157,7 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
         msg="Something wrong!")
 
   def ping(self, request, context):
-    print('this is a ping request')
+    logging.warning('this is a ping request')
     return data_pb2.Response(
       code=data_pb2.StatusCode.Value('Ok'),
       msg="pinged successfully the grpc server!")

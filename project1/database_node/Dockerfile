@@ -15,7 +15,7 @@ VOLUME /data/db /data/configdb
 WORKDIR /data
 
 ADD ./src /srv/src
-RUN mkdir /srv/logs
+# RUN mkdir /srv/logs
 
 # We mount /srv/src as Volume, need to move the shell script to /tmp
 #COPY ./src/run.sh /tmp/run.sh

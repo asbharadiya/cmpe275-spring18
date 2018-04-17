@@ -1,5 +1,5 @@
 # Haoji Liu
-import time
+import time, logging
 import grpc
 import data_pb2
 import data_pb2_grpc
@@ -19,7 +19,7 @@ def run(host, port):
 
   _ONE_DAY_IN_SECONDS = 60 * 60 * 24
   try:
-    print("Server started at...%d" % port)
+    logging.warning("Server started at...%d" % port)
     while True:
       time.sleep(_ONE_DAY_IN_SECONDS)
   except KeyboardInterrupt:

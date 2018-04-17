@@ -3,13 +3,7 @@
 RFC: Climate Facts Big Data Storage and Query Pipeline
 
 ## TODO: implement some sort of Raft
-## TODO: retry socket connection when something fail
-## TODO: retry node register when something fail
-## TODO: same data upload multiple times, ignore? override?
 ## TODO: same data query multiple times
-## TODO: disk full on write?
-## TODO: read redirect?
-## TODO: exception handling?
 ## TODO: mongodb OpLog replication?
 
 ## Business Goal:
@@ -31,46 +25,10 @@ A weather data service for user to:
 * hash(<timestamp_utc>+<station_name>) - unique key for each row to avoid duplicates
 * socket connection circuit breaker pattern, retry periodically until the server is up
 * all logs are pipelined to stdout, which is then collected by supervisord
-*
 
 ### Architecture
 https://www.lucidchart.com/documents/edit/1cbc95a8-b1b8-4bd7-b40c-52ca36e420b6/0
 
-* Note that this is the phase 1, for prototyping
-* 3 nodes, web, db, task scheduler
-* web handles all incoming read/write requests
-* db node stores data, and listens from read/write sockets
-* task scheduler monitors nodes health, route read requests, broadcast write requests
-* Input: csv files/streaming
-* Output: stream of byte strings, in csv format
-* Interface: restful API
-
-
-### API
-
-#### get
-* endpoint: /data/read/v1
-* method: GET
-* available query parameters:
-..* from_timestamp
-..* to_timestamp
-..* location
-..* facets
-..* token
-..* pagination
-
-
-#### post
-* endpoint: /data/write/v1
-* method: POST
-* available form parameters: TBD
-
-
-#### put
-TBD
-
-#### delete
-TBD
 
 ### MongoDB schema
 
@@ -88,12 +46,9 @@ main_db.weather.insert_one(
 ### Future TODOs:
 * sharding on data
 * cache on web server
-* make web server a fleet with web nodes, and use load balancing reverse proxy
 * database oplog replication
-* dynamic ip address binding on sockets
-* heartbeat monitor for db nodes
 
-### random links
+### useful links
 
 https://en.wikipedia.org/wiki/State_machine_replication
 https://en.wikipedia.org/wiki/Paxos_(computer_science)
@@ -147,7 +102,7 @@ docker run -it ubuntu
 ## Set up local dev env
 
 * if your docker-compose hangs, try `127.0.0.1 localunixsocket localunixsocket.local # these are for docker `
-* Fork this: https://github.com/haojiliu/cmpe275-spring18
+* Fork and clone this: https://github.com/haojiliu/cmpe275-spring18
 
 * On local do these:
 
@@ -156,9 +111,36 @@ cd base_image/
 docker build -t cmpe275_base_image .
 cd database_node/
 docker build -t cmpe275_db_base_image database_node/db_base_image/
-docker-compose build
-docker-compose up -d
+cd project1 && ./boostrap.sh
 ```
+
+### To run javascript:
+```
+brew install maven
+mvn clean package
+java -cp target/grpcJava-1.0-SNAPSHOT-jar-with-dependencies.jar com.cmpe275.grpcComm.JavaClient
+```
+
+### To monitor processes on db node:
+```
+localhost:9003
+```
+
+### To monitor processes on task scheduler:
+```
+localhost:9002
+```
+
+### To monitor processes on grpc:
+```
+localhost:9004
+```
+
+### To view logs on a given node:
+* ssh into the node
+* `tail -f /srv/logs/*.log`
+
+
 ### To ssh into a container:
 ```
 docker exec -it cmpe275_web bash

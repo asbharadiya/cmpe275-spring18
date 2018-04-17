@@ -6,8 +6,8 @@ ADD ./src /srv/src
 
 RUN mkdir /srv/logs
 
-EXPOSE 3000 8081
+EXPOSE 8080 8081 9004
 
-COPY ./src/run.sh /tmp/run.sh
-RUN chmod +x /tmp/run.sh
-CMD /tmp/run.sh
+# Copy config files over
+ADD ./config/supervisord.conf /etc/supervisord.conf
+CMD /usr/bin/supervisord -c /etc/supervisord.conf

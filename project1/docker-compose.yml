@@ -8,6 +8,7 @@ services:
     container_name: cmpe275_grpc
     ports:
       - "8080:8080" # for local to make grpc call to container
+      - "9004:9004" # supervisord
     tty: true
   db:
     ports:
