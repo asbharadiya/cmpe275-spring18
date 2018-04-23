@@ -41,6 +41,7 @@ message GetRequest {
 message QueryParams {
   string from_utc = 1;
   string to_utc = 2;
+  string param_json = 3;
 }
 
 message MetaData {

@@ -1,3 +1,4 @@
+# Haoji Liu
 import time, datetime
 import grpc
 import data_pb2
@@ -44,7 +45,6 @@ def get_read_socket():
   return read_client_sock
 
 def read(sock, params):
-  # TODO: add more params like table name, target station
   logging.warning('trying to send a req to read socket...')
   logging.warning(sock)
   sock.send_json(params)
@@ -114,6 +114,7 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
   # def __init__(self, read_sock, write_sock):
   #   self.read_sock = read_sock
   #   self.write_sock = write_sock
+
   def putHandler(self, request_iterator, context):
     logging.warning('this is a put request')
     if pre_write_check():
@@ -122,17 +123,13 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
         payload = {
           'raw': request.putRequest.datFragment.data.decode(),
           'uuid': request.putRequest.metaData.uuid}
-        # timestamp for mesonet only, mesowest each row has diff timestamps
-        if request.putRequest.datFragment.timestamp_utc:
-          logging.warning('mesonet!')
-          payload['timestamp_utc'] = request.putRequest.datFragment.timestamp_utc
-        else:
-          logging.warning('mesowest!')
         write(payload)
+      logging.warning('put succeeded...')
       return data_pb2.Response(
         code=data_pb2.StatusCode.Value('Ok'),
         msg="put data successfully the grpc server!")
     else:
+      logging.warning('put failed...')
       return data_pb2.Response(
         code=data_pb2.StatusCode.Value('Failed'),
         msg="this node is full")
@@ -141,7 +138,8 @@ class DataServer(data_pb2_grpc.CommunicationServiceServicer):
     params = {
       'from_utc': request.getRequest.queryParams.from_utc,
       'to_utc': request.getRequest.queryParams.to_utc,
-      'target': 'mesowest' # default to mesowest
+      'target': 'mesowest', # default to mesowest,
+      'params_json': request.getRequest.queryParams.params_json
     }
     logging.warning('this is a get request with params %s' % str(params))
     if pre_read_check(params):

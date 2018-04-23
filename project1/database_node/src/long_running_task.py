@@ -1,5 +1,5 @@
 # Haoji Liu
-import sys, os
+import sys, os, json, re
 import time
 import datetime
 import threading
@@ -15,12 +15,8 @@ from pymongo import MongoClient
 client = MongoClient()
 client = MongoClient('localhost', 27017)
 db = client.main_db
-mesowest = db['mesowest']
-mesonet = db['mesonet']
-
-# TODO: for test only
-# mesowest.remove({})
-# mesonet.remove({})
+weather_data = db['weather_data']
+# weather_data.remove({})
 
 # SCHEMA:
 # db.data.insert({
@@ -30,7 +26,6 @@ mesonet = db['mesonet']
 #     "raw": // all columns except the station column
 #     "created_at_utc": // this row is inserted at
 #   })
-
 read_host = util.try_get_ip(constants.zmq_read_host)
 write_host = util.try_get_ip(constants.zmq_write_host)
 
@@ -38,25 +33,21 @@ CONST_DB_LOWER_BOUND = 1 * 1024 * 1024 # 1 MB
 
 CONST_TIMESTAMP_FMT = '%Y-%m-%d %H:%M:%S'
 
-CONST_MEDIA_TYPE_TEXT_MESOWEST = 1
+CONST_STD_COL_LIST = 'STN YYMMDD/HHMM MNET SLAT SLON SELV TMPF SKNT DRCT GUST PMSL ALTI DWPF RELH WTHR P24I'.split()
+CONST_NUM_OF_COLS = len(CONST_STD_COL_LIST)
 
-def format_timestamp_mesowest(timestamp):
-  """
-  convert from 20180316/2145 to 2018-03-16 21:45:00
-  """
-  tuples = timestamp.split('/')
-  assert len(tuples) == 2
-  year = tuples[0][:4]
-  month = tuples[0][4:6]
-  day = tuples[0][6:8]
-  hour = tuples[1][:2]
-  minute = tuples[1][2:4]
-
-  return '%s-%s-%s %s:%s:00' % (year, month, day, hour, minute)
-
+CONST_COL_TYPE_MAP = {
+  'SLAT': float,
+  'SLON': float,
+  'SELV': float,
+  'TMPF': float,
+  'GUST': float,
+  'ALTI': float,
+}
 
 def is_disk_full():
-  """reroute to other clusters if disk full here
+  """
+  Re-route to other clusters if disk full here
   Returns: True if disk full
   """
   logging.warning('available space %s' % os.statvfs('/data/db').f_bavail)
@@ -64,23 +55,82 @@ def is_disk_full():
   logging.warning(val)
   return val
 
+def get_op_from_additional_params(param):
+  op = param['op']
+  if op == 'eq':
+    if isinstance(param['rhs'], list):
+      return '$in'
+    else:
+      return '$eq'
+  elif op == 'lt':
+    return '$lt'
+  elif op == 'gt':
+    return '$gt'
+  elif op == 'gte':
+    return '$gte'
+  elif op == 'in':
+    return '$in'
+  else:
+    logging.warning('invalid operator %s' % op)
+
+def try_cast_col(col, val):
+  """In case we need float instead of string"""
+  logging.warning('try casting %s for column %s' % (val, col))
+  cast_val = val
+  if col in CONST_COL_TYPE_MAP:
+    if isinstance(val, list):
+      cast_val = [CONST_COL_TYPE_MAP[col](item) for item in val]
+    else:
+      cast_val = CONST_COL_TYPE_MAP[col](val)
+
+  return cast_val
+
 def get_cursor(target, params):
   """
+  params looks like:
+  [
+  {
+    'lhs': 'TMPF',
+    'op': 'gt',
+    'rhs': '0'
+  },
+  {
+    'lhs': 'STN',
+    'op': 'eq',
+    'rhs': ['HCOT1', 'BBN']
+  }
+  ]
   Returns: mongodb cursor object
   """
   # these are in the format of '2016-18-19 12:12:12'
   from_utc = params['from_utc']
   to_utc = params['to_utc']
+  # TODO: json load and parse
+  try:
+    additional_params = json.loads(params['params_json'])
+  except:
+    logging.warning('loading params json failed...')
+    additional_params = []
 
   start = datetime.datetime.strptime(from_utc, CONST_TIMESTAMP_FMT)
   end = datetime.datetime.strptime(to_utc, CONST_TIMESTAMP_FMT)
 
-  cursor = target.find({
+  filters = {
     'timestamp_utc': {
         '$gte': start,
-        '$lt': end
+        '$lte': end
     }
-  })
+  }
+
+  for param in additional_params:
+    lhs = param['lhs']
+    op = get_op_from_additional_params(param)
+
+    filters[lhs] = {
+      op: try_cast_col(lhs, param['rhs'])
+    }
+
+  cursor = target.find(filters)
   return cursor
 
 def connect_read_port(context):
@@ -110,7 +160,6 @@ def serialize(doc):
   Returns byte string
   """
   logging.warning(doc)
-  # TODO: This is mesowest, for mesonet we need to return the timestamp as well
   return doc['raw'].encode()
 
 def read(sock):
@@ -125,12 +174,7 @@ def read(sock):
         sock.send_multipart([str(val).encode(),])
         continue
 
-      target = params['target']
-      if target == 'mesowest':
-        cursor = get_cursor(mesowest, params)
-      else:
-        cursor = get_cursor(mesonet, params)
-
+      cursor = get_cursor(weather_data, params)
       parts = [serialize(doc) for doc in cursor]
       if not parts:
         # This is to bypass zmq, empty list throws error
@@ -148,9 +192,57 @@ def sanitize(line):
   """remove extra spaces, tabs, trailing/leading spaces, etc."""
   return line.strip()
 
+def format_timestamp(timestamp):
+  """
+  convert from 20180316_2145 to 2018-03-16 21:45:00
+  """
+  try:
+    datetime.datetime.strptime(timestamp, CONST_TIMESTAMP_FMT)
+  except:
+    logging.warning('timestamp format failed, probably need conversion')
+    tuples = re.split('_|/', timestamp)
+    assert len(tuples) == 2
+    year = tuples[0][:4]
+    month = tuples[0][4:6]
+    day = tuples[0][6:8]
+    hour = tuples[1][:2]
+    minute = tuples[1][2:4]
+
+    return '%s-%s-%s %s:%s:00' % (year, month, day, hour, minute)
+  return timestamp
+
 def deserialize(line):
-  station = line.split(' ')[0]
-  return {'station': station, 'raw': line}
+  """split a line int columns"""
+  if ',' in line:
+    cols = re.split(',', line)
+  else:
+    # we assume it's space separated
+    cols = re.split('\s', line)
+
+  cols = list(filter(None, cols))
+  logging.warning(cols)
+
+  assert len(cols) == CONST_NUM_OF_COLS
+
+  station = cols[0]
+  ts = format_timestamp(cols[1])
+  logging.warning(ts)
+
+  d = {
+    'station': station,
+    'raw': line,
+    'timestamp_utc': datetime.datetime.strptime(ts, CONST_TIMESTAMP_FMT),
+    'created_at_utc': datetime.datetime.now(),
+    'hash': get_hash(station+ts)
+  }
+  logging.warning(d)
+
+  # Adding all columns
+  for idx, val in enumerate(CONST_STD_COL_LIST):
+    d[val] = try_cast_col(val, cols[idx])
+
+  logging.warning(d)
+  return d
 
 def get_hash(s):
   return hashlib.sha224(s.encode()).hexdigest()
@@ -169,39 +261,22 @@ def write(sock):
     data = sock.recv_json()
     raw = data.get('raw', 'placeholder write data from db node itself...')
     uuid = data['uuid']
-    logging.warning(raw)
 
     for line in raw.splitlines():
       try:
-        line = sanitize(line) + '\n'
+        line = sanitize(line)
         # invalid data
         if not line:
           continue
-        # mesonet
-        ts = data.get('timestamp_utc')
-        target = mesonet
-        # mesowest
-        logging.warning(ts)
-        if not ts:
-          logging.warning('mesowest!!')
-          target = mesowest
-          ts = format_timestamp_mesowest(line.split()[1])
-
-
-        timestamp_utc = datetime.datetime.strptime(ts, CONST_TIMESTAMP_FMT)
-
         d = deserialize(line)
-        d['timestamp_utc'] = timestamp_utc
-        d['created_at_utc'] = datetime.datetime.now()
         d['uuid'] = uuid
-        # to detect duplicates
-        d['hash'] = get_hash(ts + d['station'])
-      except:
+      except Exception as e:
         logging.warning('something wrong with writing this line %s' % line)
         continue
       # if nothing wrong, write this line
       logging.warning('Going to write the following station to the db node: %s' % d)
-      _write(d, target)
+      _write(d, weather_data)
+    logging.warning('Write succeeded...')
 
 def main():
   # TODO: implement a retry context manager

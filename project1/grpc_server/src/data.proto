@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-
 package grpcComm;
 option java_multiple_files = true;
 option java_package = "com.cmpe275.grpcComm";
@@ -39,20 +38,21 @@ message GetRequest {
   QueryParams queryParams = 2;
 }
 
+message DatFragment {
+  string timestamp_utc = 1;
+  bytes data = 2;
+}
+
 message QueryParams {
   string from_utc = 1;
   string to_utc = 2;
+  string params_json = 3;
 }
 
 message MetaData {
   string uuid = 1;
   int32 numOfFragment = 2;
-  int32 mediaType = 3;
-}
-
-message DatFragment {
-  string timestamp_utc = 1;
-  bytes data = 2;
+  string mediaType = 3;
 }
 
 enum StatusCode {

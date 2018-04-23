@@ -2,6 +2,37 @@
 
 RFC: Climate Facts Big Data Storage and Query Pipeline
 
+## FOR THE DEMO:
+* make sure you have docker installed, and then run this:
+```
+cd base_image/
+docker build -t cmpe275_base_image .
+cd database_node/
+docker build -t cmpe275_db_base_image database_node/db_base_image/
+```
+
+* for database node - Ankit and Ryan make sure they can run this:
+```
+docker-compose build db
+docker-compose up -d db
+
+# to ssh into the container:
+
+docker exec -it cmpe275_db bash
+
+# to tail the logs in the container:
+
+tail -f /srv/logs/*.log
+
+```
+
+### whenever the IP addr changes or is assigned to your node, do the following:
+
+* for Ryan and Ankit, update /srv/src/constants.py with Haoji and Jason's new IP, go to localhost:9003, and then restart requestHandler
+* for Jason, do nothing, just tell Ryan Ankit and Haoji what his new IP address is
+* for Haoji, update /srv/src/constants.py, go to localhost:9004, and then restart grpcServer, tell Ryan and Ankit his new IP
+
+
 ## TODO: implement some sort of Raft
 ## TODO: same data query multiple times
 ## TODO: mongodb OpLog replication?
@@ -91,7 +122,6 @@ CREATE TABLE nodes (
 (1, None, None, None, None, u'10,2,1,5', u'/tmp/23sdclw.gz')
 >>>
 ```
-
 
 ### quick playground, this brings up a fresh ubuntu container immediately for you to play with:
 ```

@@ -46,5 +46,7 @@ com/cmpe275/grpcComm/CommunicationServiceGrpc.class
 com/cmpe275/grpcComm/GetRequestOrBuilder.class
 com/cmpe275/grpcComm/DatFragment.class
 com/cmpe275/grpcComm/Request.class
+com/cmpe275/grpcComm/JavaAPI.class
 com/cmpe275/grpcComm/JavaClient.class
+com/cmpe275/grpcComm/Test.class
 com/cmpe275/grpcComm/MetaData$Builder.class

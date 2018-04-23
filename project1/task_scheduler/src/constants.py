@@ -7,7 +7,6 @@ CONST_NODE_FLAG_DEAD = 10
 MIN_HEARTBEAT_INTERVAL = 5 # in seconds
 
 zmq_read_host = '0.0.0.0'
-#zmq_read_host = '172.18.0.2'
 read_client_port = 5559
 read_worker_port = 5560
 

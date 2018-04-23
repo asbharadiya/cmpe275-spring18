@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='data.proto',
   package='grpcComm',
   syntax='proto3',
-  serialized_pb=_b('\n\ndata.proto\x12\x08grpcComm\"\xd3\x01\n\x07Request\x12\x12\n\nfromSender\x18\x01 \x01(\t\x12\x12\n\ntoReceiver\x18\x02 \x01(\t\x12\x16\n\x0eoriginalSender\x18\x03 \x01(\t\x12%\n\x04ping\x18\x06 \x01(\x0b\x32\x15.grpcComm.PingRequestH\x00\x12*\n\nputRequest\x18\x07 \x01(\x0b\x32\x14.grpcComm.PutRequestH\x00\x12*\n\ngetRequest\x18\x08 \x01(\x0b\x32\x14.grpcComm.GetRequestH\x00\x42\t\n\x07payload\"\x8d\x01\n\x08Response\x12\"\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x14.grpcComm.StatusCode\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12$\n\x08metaData\x18\x03 \x01(\x0b\x32\x12.grpcComm.MetaData\x12*\n\x0b\x64\x61tFragment\x18\x04 \x01(\x0b\x32\x15.grpcComm.DatFragment\"\x1a\n\x0bPingRequest\x12\x0b\n\x03msg\x18\x01 \x01(\t\"^\n\nPutRequest\x12$\n\x08metaData\x18\x01 \x01(\x0b\x32\x12.grpcComm.MetaData\x12*\n\x0b\x64\x61tFragment\x18\x02 \x01(\x0b\x32\x15.grpcComm.DatFragment\"^\n\nGetRequest\x12$\n\x08metaData\x18\x01 \x01(\x0b\x32\x12.grpcComm.MetaData\x12*\n\x0bqueryParams\x18\x02 \x01(\x0b\x32\x15.grpcComm.QueryParams\"/\n\x0bQueryParams\x12\x10\n\x08\x66rom_utc\x18\x01 \x01(\t\x12\x0e\n\x06to_utc\x18\x02 \x01(\t\"B\n\x08MetaData\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x15\n\rnumOfFragment\x18\x02 \x01(\x05\x12\x11\n\tmediaType\x18\x03 \x01(\x05\"2\n\x0b\x44\x61tFragment\x12\x15\n\rtimestamp_utc\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c*-\n\nStatusCode\x12\x0b\n\x07Unknown\x10\x00\x12\x06\n\x02Ok\x10\x01\x12\n\n\x06\x46\x61iled\x10\x02\x32\xb3\x01\n\x14\x43ommunicationService\x12\x35\n\nputHandler\x12\x11.grpcComm.Request\x1a\x12.grpcComm.Response(\x01\x12\x35\n\ngetHandler\x12\x11.grpcComm.Request\x1a\x12.grpcComm.Response0\x01\x12-\n\x04ping\x12\x11.grpcComm.Request\x1a\x12.grpcComm.ResponseB#\n\x14\x63om.cmpe275.grpcCommB\tDataProtoP\x01\x62\x06proto3')
+  serialized_pb=_b('\n\ndata.proto\x12\x08grpcComm\"\xd3\x01\n\x07Request\x12\x12\n\nfromSender\x18\x01 \x01(\t\x12\x12\n\ntoReceiver\x18\x02 \x01(\t\x12\x16\n\x0eoriginalSender\x18\x03 \x01(\t\x12%\n\x04ping\x18\x06 \x01(\x0b\x32\x15.grpcComm.PingRequestH\x00\x12*\n\nputRequest\x18\x07 \x01(\x0b\x32\x14.grpcComm.PutRequestH\x00\x12*\n\ngetRequest\x18\x08 \x01(\x0b\x32\x14.grpcComm.GetRequestH\x00\x42\t\n\x07payload\"\x8d\x01\n\x08Response\x12\"\n\x04\x63ode\x18\x01 \x01(\x0e\x32\x14.grpcComm.StatusCode\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12$\n\x08metaData\x18\x03 \x01(\x0b\x32\x12.grpcComm.MetaData\x12*\n\x0b\x64\x61tFragment\x18\x04 \x01(\x0b\x32\x15.grpcComm.DatFragment\"\x1a\n\x0bPingRequest\x12\x0b\n\x03msg\x18\x01 \x01(\t\"^\n\nPutRequest\x12$\n\x08metaData\x18\x01 \x01(\x0b\x32\x12.grpcComm.MetaData\x12*\n\x0b\x64\x61tFragment\x18\x02 \x01(\x0b\x32\x15.grpcComm.DatFragment\"^\n\nGetRequest\x12$\n\x08metaData\x18\x01 \x01(\x0b\x32\x12.grpcComm.MetaData\x12*\n\x0bqueryParams\x18\x02 \x01(\x0b\x32\x15.grpcComm.QueryParams\"2\n\x0b\x44\x61tFragment\x12\x15\n\rtimestamp_utc\x18\x01 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x02 \x01(\x0c\"D\n\x0bQueryParams\x12\x10\n\x08\x66rom_utc\x18\x01 \x01(\t\x12\x0e\n\x06to_utc\x18\x02 \x01(\t\x12\x13\n\x0bparams_json\x18\x03 \x01(\t\"B\n\x08MetaData\x12\x0c\n\x04uuid\x18\x01 \x01(\t\x12\x15\n\rnumOfFragment\x18\x02 \x01(\x05\x12\x11\n\tmediaType\x18\x03 \x01(\t*-\n\nStatusCode\x12\x0b\n\x07Unknown\x10\x00\x12\x06\n\x02Ok\x10\x01\x12\n\n\x06\x46\x61iled\x10\x02\x32\xb3\x01\n\x14\x43ommunicationService\x12\x35\n\nputHandler\x12\x11.grpcComm.Request\x1a\x12.grpcComm.Response(\x01\x12\x35\n\ngetHandler\x12\x11.grpcComm.Request\x1a\x12.grpcComm.Response0\x01\x12-\n\x04ping\x12\x11.grpcComm.Request\x1a\x12.grpcComm.ResponseB#\n\x14\x63om.cmpe275.grpcCommB\tDataProtoP\x01\x62\x06proto3')
 )
 
 _STATUSCODE = _descriptor.EnumDescriptor(
@@ -44,8 +44,8 @@ _STATUSCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=771,
-  serialized_end=816,
+  serialized_start=792,
+  serialized_end=837,
 )
 _sym_db.RegisterEnumDescriptor(_STATUSCODE)
 
@@ -284,89 +284,6 @@ _GETREQUEST = _descriptor.Descriptor(
 )
 
 
-_QUERYPARAMS = _descriptor.Descriptor(
-  name='QueryParams',
-  full_name='grpcComm.QueryParams',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='from_utc', full_name='grpcComm.QueryParams.from_utc', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='to_utc', full_name='grpcComm.QueryParams.to_utc', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=602,
-  serialized_end=649,
-)
-
-
-_METADATA = _descriptor.Descriptor(
-  name='MetaData',
-  full_name='grpcComm.MetaData',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcComm.MetaData.uuid', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='numOfFragment', full_name='grpcComm.MetaData.numOfFragment', index=1,
-      number=2, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='mediaType', full_name='grpcComm.MetaData.mediaType', index=2,
-      number=3, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=651,
-  serialized_end=717,
-)
-
-
 _DATFRAGMENT = _descriptor.Descriptor(
   name='DatFragment',
   full_name='grpcComm.DatFragment',
@@ -400,8 +317,98 @@ _DATFRAGMENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=719,
-  serialized_end=769,
+  serialized_start=602,
+  serialized_end=652,
+)
+
+
+_QUERYPARAMS = _descriptor.Descriptor(
+  name='QueryParams',
+  full_name='grpcComm.QueryParams',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='from_utc', full_name='grpcComm.QueryParams.from_utc', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='to_utc', full_name='grpcComm.QueryParams.to_utc', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='params_json', full_name='grpcComm.QueryParams.params_json', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=654,
+  serialized_end=722,
+)
+
+
+_METADATA = _descriptor.Descriptor(
+  name='MetaData',
+  full_name='grpcComm.MetaData',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuid', full_name='grpcComm.MetaData.uuid', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='numOfFragment', full_name='grpcComm.MetaData.numOfFragment', index=1,
+      number=2, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='mediaType', full_name='grpcComm.MetaData.mediaType', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=724,
+  serialized_end=790,
 )
 
 _REQUEST.fields_by_name['ping'].message_type = _PINGREQUEST
@@ -428,9 +435,9 @@ DESCRIPTOR.message_types_by_name['Response'] = _RESPONSE
 DESCRIPTOR.message_types_by_name['PingRequest'] = _PINGREQUEST
 DESCRIPTOR.message_types_by_name['PutRequest'] = _PUTREQUEST
 DESCRIPTOR.message_types_by_name['GetRequest'] = _GETREQUEST
+DESCRIPTOR.message_types_by_name['DatFragment'] = _DATFRAGMENT
 DESCRIPTOR.message_types_by_name['QueryParams'] = _QUERYPARAMS
 DESCRIPTOR.message_types_by_name['MetaData'] = _METADATA
-DESCRIPTOR.message_types_by_name['DatFragment'] = _DATFRAGMENT
 DESCRIPTOR.enum_types_by_name['StatusCode'] = _STATUSCODE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -469,6 +476,13 @@ GetRequest = _reflection.GeneratedProtocolMessageType('GetRequest', (_message.Me
   ))
 _sym_db.RegisterMessage(GetRequest)
 
+DatFragment = _reflection.GeneratedProtocolMessageType('DatFragment', (_message.Message,), dict(
+  DESCRIPTOR = _DATFRAGMENT,
+  __module__ = 'data_pb2'
+  # @@protoc_insertion_point(class_scope:grpcComm.DatFragment)
+  ))
+_sym_db.RegisterMessage(DatFragment)
+
 QueryParams = _reflection.GeneratedProtocolMessageType('QueryParams', (_message.Message,), dict(
   DESCRIPTOR = _QUERYPARAMS,
   __module__ = 'data_pb2'
@@ -483,13 +497,6 @@ MetaData = _reflection.GeneratedProtocolMessageType('MetaData', (_message.Messag
   ))
 _sym_db.RegisterMessage(MetaData)
 
-DatFragment = _reflection.GeneratedProtocolMessageType('DatFragment', (_message.Message,), dict(
-  DESCRIPTOR = _DATFRAGMENT,
-  __module__ = 'data_pb2'
-  # @@protoc_insertion_point(class_scope:grpcComm.DatFragment)
-  ))
-_sym_db.RegisterMessage(DatFragment)
-
 
 DESCRIPTOR.has_options = True
 DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\n\024com.cmpe275.grpcCommB\tDataProtoP\001'))
@@ -500,8 +507,8 @@ _COMMUNICATIONSERVICE = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=819,
-  serialized_end=998,
+  serialized_start=840,
+  serialized_end=1019,
   methods=[
   _descriptor.MethodDescriptor(
     name='putHandler',
