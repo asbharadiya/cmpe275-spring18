@@ -15,7 +15,7 @@ def report(job):
     constants.EMAILER_SENDER_PASSWD,
     constants.EMAILER_RECIPIENTS,
     constants.EMAILER_NODE_ERROR_UBJECT,
-    constants.EMAILER_NODE_ERROR_BODY)
+    constants.EMAILER_NODE_ERROR_BODY % job[0])
 
   return True
 

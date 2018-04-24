@@ -6,7 +6,9 @@ import socket
 import fcntl
 import struct
 
-CONST_TASK_SCHEDULER_HOST = 'cmpe275_task_scheduler'
+import constants
+
+CONST_TASK_SCHEDULER_HOST = constants.zmq_read_host
 CONST_RETRY_SLEEP_INTERVAL = 5 # in seconds
 CONST_RETRY_CNT = 99999 # retry 5 times at most
 

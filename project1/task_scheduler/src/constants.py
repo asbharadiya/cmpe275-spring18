@@ -15,5 +15,5 @@ DB_FILE_PATH = '/srv/tmp.db'
 EMAILER_SENDER = 'cmpe275server@gmail.com'
 EMAILER_SENDER_PASSWD = 'donghaosu'
 EMAILER_RECIPIENTS = ['haoji.liu@sjsu.edu','donghao.su@sjsu.edu']
-EMAILER_NODE_ERROR_SUBJECT = 'cmpe275 project 1 node failure'
-EMAILER_NODE_ERROR_BODY = 'Your node goes bad, please check.'
+EMAILER_NODE_ERROR_SUBJECT = '[Warning]weather service node failure'
+EMAILER_NODE_ERROR_BODY = 'Node %s is down.'

@@ -24,6 +24,7 @@ services:
       - "9002:9002" # supervisord
       - "5559:5559" # read client port
       - "5560:5560" # read worker port
+      - "80:80" # heartbeat register
     # So that wysiwyg
     volumes:
       - ./task_scheduler/src:/srv/src
